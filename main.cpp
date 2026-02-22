@@ -55,7 +55,6 @@ void createSession() {
     string filename = "session_" + courseCode + "_" + date + ".txt";
 
     ofstream file(filename.c_str());
-
     file << "Attendance List\n";
     file.close();
 
@@ -63,7 +62,7 @@ void createSession() {
 }
 
 /* =========================
-   WEEK 3 – ATTENDANCE
+   WEEK 3 – MARK ATTENDANCE
    ========================= */
 
 void markAttendance() {
@@ -99,6 +98,93 @@ void markAttendance() {
 }
 
 /* =========================
+   WEEK 4 – VIEW ATTENDANCE
+   ========================= */
+
+void viewAttendance() {
+    string courseCode, date;
+
+    cout << "Enter course code: ";
+    cin >> courseCode;
+
+    cout << "Enter date (YYYY_MM_DD): ";
+    cin >> date;
+
+    string filename = "session_" + courseCode + "_" + date + ".txt";
+
+    ifstream file(filename.c_str());
+
+    if (!file) {
+        cout << "Session file not found.\n";
+        return;
+    }
+
+    string line;
+    cout << "\nAttendance Report:\n";
+
+    while (getline(file, line)) {
+        cout << line << endl;
+    }
+
+    file.close();
+}
+
+/* =========================
+   WEEK 4 – UPDATE ATTENDANCE
+   ========================= */
+
+void updateAttendance() {
+    string courseCode, date;
+    string index;
+    char newStatus;
+
+    cout << "Enter course code: ";
+    cin >> courseCode;
+
+    cout << "Enter date (YYYY_MM_DD): ";
+    cin >> date;
+
+    string filename = "session_" + courseCode + "_" + date + ".txt";
+
+    ifstream file(filename.c_str());
+    ofstream temp("temp.txt");
+
+    if (!file) {
+        cout << "Session file not found.\n";
+        return;
+    }
+
+    cout << "Enter student index to update: ";
+    cin >> index;
+
+    cout << "Enter new status (P/A): ";
+    cin >> newStatus;
+
+    string line;
+    bool found = false;
+
+    while (getline(file, line)) {
+        if (line.find(index) != string::npos) {
+            temp << index << " - " << newStatus << endl;
+            found = true;
+        } else {
+            temp << line << endl;
+        }
+    }
+
+    file.close();
+    temp.close();
+
+    remove(filename.c_str());
+    rename("temp.txt", filename.c_str());
+
+    if (found)
+        cout << "Attendance updated successfully!\n";
+    else
+        cout << "Student record not found.\n";
+}
+
+/* =========================
    MAIN MENU
    ========================= */
 
@@ -107,12 +193,14 @@ int main() {
     int choice;
 
     do {
-        cout << "\n===== WEEK 3 SYSTEM =====\n";
+        cout << "\n===== WEEK 4 SYSTEM =====\n";
         cout << "1. Register Student\n";
         cout << "2. View Students\n";
         cout << "3. Create Session\n";
         cout << "4. Mark Attendance\n";
-        cout << "5. Exit\n";
+        cout << "5. View Attendance\n";
+        cout << "6. Update Attendance\n";
+        cout << "7. Exit\n";
         cout << "Enter choice: ";
 
         cin >> choice;
@@ -122,11 +210,13 @@ int main() {
             case 2: viewStudents(); break;
             case 3: createSession(); break;
             case 4: markAttendance(); break;
-            case 5: cout << "Exiting...\n"; break;
+            case 5: viewAttendance(); break;
+            case 6: updateAttendance(); break;
+            case 7: cout << "Exiting...\n"; break;
             default: cout << "Invalid choice.\n";
         }
 
-    } while(choice != 5);
+    } while(choice != 7);
 
     return 0;
 }
